@@ -192,7 +192,7 @@ void ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController,
 		return;
 	}
 
-	if (InStrikeCount == 3)
+	if (InStrikeCount == 5)
 	{
 		ABCPlayerState* BCPS = InChattingPlayerController->GetPlayerState<ABCPlayerState>();
 

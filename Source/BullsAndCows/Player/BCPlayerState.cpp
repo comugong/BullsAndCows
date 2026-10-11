@@ -1,7 +1,7 @@
-#include "BCPlayerState.h"
+﻿#include "BCPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
-ABCPlayerState::ABCPlayerState() : PlayerNameString(TEXT("None")), CurrentGuessCount(0), MaxGuessCount(3)
+ABCPlayerState::ABCPlayerState() : PlayerNameString(TEXT("None")), CurrentGuessCount(0), MaxGuessCount(5)
 {
 	bReplicates = true;
 }
