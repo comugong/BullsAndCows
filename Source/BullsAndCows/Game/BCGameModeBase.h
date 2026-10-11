@@ -28,16 +28,19 @@ public:
 
 	void ResetGame();
 
-	void JudgeGame(ABCPlayerController* InChattingPlayerController, int InStrikeCount);
+	bool JudgeGame(ABCPlayerController* InChattingPlayerController, int InStrikeCount);
 
 	void PrintChatMessageString(ABCPlayerController* InChattingPlayerController, const FString& InChatMessageString);
 
 	void OnTurnTimeExpired();
 
+
 protected:
 	void StartTurn(ABCPlayerController* InPlayerController);
 
 	void AdvanceTurn();
+
+	void StartNewRound();
 
 protected:
 	TArray<TObjectPtr<ABCPlayerController>> AllPlayerControllers;
@@ -47,4 +50,8 @@ protected:
 	FTimerHandle TurnTimerHandle;
 
 	float TurnDuration = 15.0f;
+
+	FTimerHandle RoundResetTimerHandle;
+
+	float RoundResultDisplayDuration = 5.0f;
 };

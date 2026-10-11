@@ -17,6 +17,8 @@ void ABCGameModeBase::OnPostLogin(AController* NewPlayer)
 {
 	Super::OnPostLogin(NewPlayer);
 
+	UE_LOG(LogTemp, Warning, TEXT("OnPostLogin called"));
+
 	ABCPlayerController* BCPlayerController = Cast<ABCPlayerController>(NewPlayer);
 	if (IsValid(BCPlayerController) == true)
 	{
@@ -185,20 +187,20 @@ void ABCGameModeBase::ResetGame()
 	}
 }
 
-void ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController, int InStrikeCount)
+bool ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController, int InStrikeCount)
 {
 	if (!IsValid(InChattingPlayerController))
 	{
-		return;
+		return false;
 	}
 
-	if (InStrikeCount == 5)
+	if (InStrikeCount == 3)
 	{
 		ABCPlayerState* BCPS = InChattingPlayerController->GetPlayerState<ABCPlayerState>();
 
 		if (!IsValid(BCPS))
 		{
-			return;
+			return false;
 		}
 
 		FString WinMessage = BCPS->PlayerNameString + TEXT(" WIN");
@@ -211,9 +213,15 @@ void ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController,
 			}
 		}
 
-		ResetGame();
+		GetWorldTimerManager().SetTimer(
+			RoundResetTimerHandle,
+			this,
+			&ABCGameModeBase::StartNewRound,
+			RoundResultDisplayDuration,
+			false
+		);
 
-		return;
+		return true;
 	}
 	else
 	{
@@ -241,10 +249,18 @@ void ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController,
 				}
 			}
 
-			ResetGame();
+			GetWorldTimerManager().SetTimer(
+				RoundResetTimerHandle,
+				this,
+				&ABCGameModeBase::StartNewRound,
+				RoundResultDisplayDuration,
+				false
+			);
 
-			return;
+			return true;
 		}
+
+		return false;
 	}
 }
 
@@ -297,8 +313,11 @@ void ABCGameModeBase::PrintChatMessageString(ABCPlayerController* InChattingPlay
 
 		const int32 StrikeCount = FCString::Atoi(*JudgeResultString.Left(1));
 
-		JudgeGame(InChattingPlayerController, StrikeCount);
-		AdvanceTurn();
+		const bool bRoundEnded = JudgeGame(InChattingPlayerController, StrikeCount);
+		if (!bRoundEnded)
+		{
+			AdvanceTurn();
+		}
 	}
 
 	for (TActorIterator<ABCPlayerController> It(GetWorld()); It; ++It)
@@ -355,8 +374,11 @@ void ABCGameModeBase::OnTurnTimeExpired()
 		}
 	}
 
-	JudgeGame(CurrentPC, 0);
-	AdvanceTurn();
+	const bool bRoundEnded = JudgeGame(CurrentPC, 0);
+	if(!bRoundEnded)
+	{
+		AdvanceTurn();
+	}
 }
 
 void ABCGameModeBase::StartTurn(ABCPlayerController* InPlayerController)
@@ -441,4 +463,11 @@ void ABCGameModeBase::AdvanceTurn()
 	}
 
 	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
+}
+
+void ABCGameModeBase::StartNewRound()
+{
+	ResetGame();
+
+	AdvanceTurn();
 }
