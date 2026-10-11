@@ -1,6 +1,8 @@
-#include "BCGameStateBase.h"
+﻿#include "BCGameStateBase.h"
 #include "Player/BCPlayerController.h"
+#include "Player/BCPlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 void ABCGameStateBase::MulticastRPCBroadcastLoginMessage_Implementation(const FString& InNameString)
 {
@@ -17,4 +19,12 @@ void ABCGameStateBase::MulticastRPCBroadcastLoginMessage_Implementation(const FS
 			}
 		}
 	}
+}
+
+void ABCGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurrentTurnPlayer);
+	DOREPLIFETIME(ThisClass, TurnEndTime);
 }
