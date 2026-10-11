@@ -20,7 +20,7 @@ void ABCGameModeBase::OnPostLogin(AController* NewPlayer)
 	ABCPlayerController* BCPlayerController = Cast<ABCPlayerController>(NewPlayer);
 	if (IsValid(BCPlayerController) == true)
 	{
-		BCPlayerController->NotificationText = FText::FromString(TEXT("Connected to the game server."));
+		BCPlayerController->NotificationText = FText::FromString(TEXT("Connected to server."));
 		AllPlayerControllers.Add(BCPlayerController);
 
 		ABCPlayerState* BCPS = BCPlayerController->GetPlayerState<ABCPlayerState>();
@@ -170,12 +170,17 @@ void ABCGameModeBase::ResetGame()
 {
 	SecretNumberString = GenerateSecretNumber();
 
-	for (const auto& CXPlayerController : AllPlayerControllers)
+	for (const auto& BCPC : AllPlayerControllers)
 	{
-		ABCPlayerState* BCPS = CXPlayerController->GetPlayerState<ABCPlayerState>();
-		if (IsValid(BCPS) == true)
+		if (IsValid(BCPC))
 		{
-			BCPS->CurrentGuessCount = 0;
+			BCPC->NotificationText = FText::FromString(TEXT("Connected to server"));
+
+			ABCPlayerState* BCPS = BCPC->GetPlayerState<ABCPlayerState>();
+			if (IsValid(BCPS) == true)
+			{
+				BCPS->CurrentGuessCount = 0;
+			}
 		}
 	}
 }
