@@ -27,4 +27,5 @@ void ABCGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(ThisClass, CurrentTurnPlayer);
 	DOREPLIFETIME(ThisClass, TurnEndTime);
+	DOREPLIFETIME(ABCGameStateBase, bIsRoundResultDisplayed);
 }

@@ -23,6 +23,11 @@ void UBCNotificationWidget::NativeTick(const FGeometry& MyGeometry, float InDelt
         return;
     }
 
+    if (BCGS->bIsRoundResultDisplayed)
+    {
+        return;
+    }
+
     const float RemainingTime = BCGS->TurnEndTime - BCGS->GetServerWorldTimeSeconds();
     const int32 Seconds = FMath::Max(0, FMath::CeilToInt(RemainingTime));
     TextBlock_Timer->SetText(FText::AsNumber(Seconds));

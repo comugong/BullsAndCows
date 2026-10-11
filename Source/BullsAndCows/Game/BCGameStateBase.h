@@ -23,4 +23,7 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Turn")
 	float TurnEndTime;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Turn")
+	bool bIsRoundResultDisplayed = false;
 };

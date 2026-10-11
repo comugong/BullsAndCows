@@ -185,6 +185,12 @@ void ABCGameModeBase::ResetGame()
 			}
 		}
 	}
+
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+	if (IsValid(BCGS))
+	{
+		BCGS->bIsRoundResultDisplayed = false;
+	}
 }
 
 bool ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController, int InStrikeCount)
@@ -211,6 +217,12 @@ bool ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController,
 			{
 				BCPlayerController->NotificationText = FText::FromString(WinMessage);
 			}
+		}
+
+		ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+		if (IsValid(BCGS))
+		{
+			BCGS->bIsRoundResultDisplayed = true;
 		}
 
 		GetWorldTimerManager().SetTimer(
@@ -247,6 +259,12 @@ bool ABCGameModeBase::JudgeGame(ABCPlayerController* InChattingPlayerController,
 				{
 					BCPlayerController->NotificationText = FText::FromString(TEXT("DRAW"));
 				}
+			}
+
+			ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+			if (IsValid(BCGS))
+			{
+				BCGS->bIsRoundResultDisplayed = true;
 			}
 
 			GetWorldTimerManager().SetTimer(
