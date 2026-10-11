@@ -42,6 +42,31 @@ void ABCGameModeBase::OnPostLogin(AController* NewPlayer)
 	}
 }
 
+void ABCGameModeBase::Logout(AController* Exiting)
+{
+	ABCPlayerController* ExitingPC = Cast<ABCPlayerController>(Exiting);
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+
+	ABCPlayerState* ExitingPS = IsValid(ExitingPC) ? ExitingPC->GetPlayerState<ABCPlayerState>() : nullptr;
+	const bool bWasCurrentTurn = IsValid(BCGS) && IsValid(ExitingPS) && BCGS->CurrentTurnPlayer == ExitingPS;
+
+	if (IsValid(ExitingPC))
+	{
+		AllPlayerControllers.Remove(ExitingPC);
+	}
+
+	if (bWasCurrentTurn)
+	{
+		GetWorldTimerManager().ClearTimer(TurnTimerHandle);
+
+		BCGS->CurrentTurnPlayer = nullptr;
+
+		AdvanceTurn();
+	}
+
+	Super::Logout(Exiting);
+}
+
 FString ABCGameModeBase::GenerateSecretNumber()
 {
 	TArray<int32> Numbers;
