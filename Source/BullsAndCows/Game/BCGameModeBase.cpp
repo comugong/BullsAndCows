@@ -295,3 +295,54 @@ void ABCGameModeBase::StartTurn(ABCPlayerController* InPlayerController)
 
 	UE_LOG(LogTemp, Log, TEXT("%s's turn start"), *BCPS->PlayerNameString);
 }
+
+void ABCGameModeBase::AdvanceTurn()
+{
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+
+	if (!IsValid(BCGS) || AllPlayerControllers.IsEmpty())
+	{
+		return;
+	}
+
+	int32 CurrentIndex = AllPlayerControllers.IndexOfByPredicate(
+		[BCGS](const TObjectPtr<ABCPlayerController>& PC)
+		{
+			return IsValid(PC) &&
+				PC->GetPlayerState<ABCPlayerState>() ==
+				BCGS->CurrentTurnPlayer;
+		}
+	);
+
+	const int32 PlayerCount = AllPlayerControllers.Num();
+
+	for (int32 Offset = 1; Offset <= PlayerCount; ++Offset)
+	{
+		const int32 NextIndex = (CurrentIndex + Offset) % PlayerCount;
+
+		ABCPlayerController* NextPC = AllPlayerControllers[NextIndex];
+
+		if (!IsValid(NextPC))
+		{
+			continue;
+		}
+
+		ABCPlayerState* NextPS = NextPC->GetPlayerState<ABCPlayerState>();
+
+		if (!IsValid(NextPS))
+		{
+			continue;
+		}
+
+		if (NextPS->CurrentGuessCount >= NextPS->MaxGuessCount)
+		{
+			continue;
+		}
+
+		StartTurn(NextPC);
+
+		return;
+	}
+
+	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
+}
