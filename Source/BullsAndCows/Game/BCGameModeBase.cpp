@@ -231,6 +231,21 @@ void ABCGameModeBase::PrintChatMessageString(ABCPlayerController* InChattingPlay
 		return;
 	}
 
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+	if (!IsValid(BCGS) || BCGS->CurrentTurnPlayer != BCPS)
+	{
+		InChattingPlayerController->ClientRPCPrintChatMessageString(TEXT("당신의 턴이 아닙니다."));
+
+		return;
+	}
+
+	if (BCGS->GetServerWorldTimeSeconds() >= BCGS->TurnEndTime)
+	{
+		InChattingPlayerController->ClientRPCPrintChatMessageString(TEXT("제한 시간이 종료되었습니다."));
+
+		return;
+	}
+
 	const FString GuessNumberString = InChatMessageString;
 	FString CombinedMessageString;
 
@@ -331,7 +346,7 @@ void ABCGameModeBase::StartTurn(ABCPlayerController* InPlayerController)
 
 	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
 	BCGS->CurrentTurnPlayer = BCPS;
-	BCGS->TurnEndTime = GetWorld()->GetTimeSeconds() + TurnDuration;
+	BCGS->TurnEndTime = BCGS->GetServerWorldTimeSeconds() + TurnDuration;
 
 	GetWorldTimerManager().SetTimer(
 		TurnTimerHandle,
@@ -359,6 +374,11 @@ void ABCGameModeBase::AdvanceTurn()
 			return IsValid(PC) && PC->GetPlayerState<ABCPlayerState>() == BCGS->CurrentTurnPlayer;
 		}
 	);
+
+	if (CurrentIndex == INDEX_NONE)
+	{
+		CurrentIndex = AllPlayerControllers.Num() - 1;
+	}
 
 	const int32 PlayerCount = AllPlayerControllers.Num();
 
