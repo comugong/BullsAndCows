@@ -265,3 +265,33 @@ void ABCGameModeBase::PrintChatMessageString(ABCPlayerController* InChattingPlay
 		}
 	}
 }
+
+void ABCGameModeBase::StartTurn(ABCPlayerController* InPlayerController)
+{
+	if (!IsValid(InPlayerController))
+	{
+		return;
+	}
+
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+	ABCPlayerState* BCPS = InPlayerController->GetPlayerState<ABCPlayerState>();
+
+	if (!IsValid(BCGS) || !IsValid(BCPS))
+	{
+		return;
+	}
+
+	GetWorldTimerManager().ClearTimer(TurnTimerHandle);
+	BCGS->CurrentTurnPlayer = BCPS;
+	BCGS->TurnEndTime = GetWorld()->GetTimeSeconds() + TurnDuration;
+
+	GetWorldTimerManager().SetTimer(
+		TurnTimerHandle,
+		this,
+		&ABCGameModeBase::OnTurnTimeExpired,
+		TurnDuration,
+		false
+	);
+
+	UE_LOG(LogTemp, Log, TEXT("%s's turn start"), *BCPS->PlayerNameString);
+}

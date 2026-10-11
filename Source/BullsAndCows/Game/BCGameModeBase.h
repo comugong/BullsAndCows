@@ -44,5 +44,5 @@ protected:
 
 	FTimerHandle TurnTimerHandle;
 
-	float TurnDuration = 10.0f;
+	float TurnDuration = 15.0f;
 };
