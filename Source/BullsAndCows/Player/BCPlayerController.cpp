@@ -1,7 +1,8 @@
-#include "BCPlayerController.h"
+﻿#include "BCPlayerController.h"
 #include "BCPlayerState.h"
 #include "Game/BCGameModeBase.h"
 #include "UI/BCChatInput.h"
+#include "UI/BCNotificationWidget.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -34,10 +35,10 @@ void ABCPlayerController::BeginPlay()
 		}
 	}
 
-	if (IsValid(NotificationTextWidgetClass) == true)
+	if (IsValid(NotificationTextWidgetClass))
 	{
-		NotificationTextWidgetInstance = CreateWidget<UUserWidget>(this, NotificationTextWidgetClass);
-		if (IsValid(NotificationTextWidgetInstance) == true)
+		NotificationTextWidgetInstance = CreateWidget<UBCNotificationWidget>(this, NotificationTextWidgetClass);
+		if (IsValid(NotificationTextWidgetInstance))
 		{
 			NotificationTextWidgetInstance->AddToViewport();
 		}

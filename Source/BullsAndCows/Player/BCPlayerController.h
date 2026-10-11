@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "BCPlayerController.generated.h"
 
 class UBCChatInput;
-class UUserWidget;
+class UBCNotificationWidget;
 
 UCLASS()
 class BULLSANDCOWS_API ABCPlayerController : public APlayerController
@@ -36,11 +36,11 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UBCChatInput> ChatInputWidgetInstance;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> NotificationTextWidgetClass;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UBCNotificationWidget> NotificationTextWidgetClass;
 
 	UPROPERTY()
-	TObjectPtr<UUserWidget> NotificationTextWidgetInstance;
+	TObjectPtr<UBCNotificationWidget> NotificationTextWidgetInstance;
 
 public:
 	UPROPERTY(Replicated, BlueprintReadOnly)
