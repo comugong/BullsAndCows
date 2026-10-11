@@ -253,6 +253,7 @@ void ABCGameModeBase::PrintChatMessageString(ABCPlayerController* InChattingPlay
 		const int32 StrikeCount = FCString::Atoi(*JudgeResultString.Left(1));
 
 		JudgeGame(InChattingPlayerController, StrikeCount);
+		AdvanceTurn();
 	}
 
 	for (TActorIterator<ABCPlayerController> It(GetWorld()); It; ++It)
@@ -264,6 +265,53 @@ void ABCGameModeBase::PrintChatMessageString(ABCPlayerController* InChattingPlay
 			BCPlayerController->ClientRPCPrintChatMessageString(CombinedMessageString);
 		}
 	}
+}
+
+void ABCGameModeBase::OnTurnTimeExpired()
+{
+	ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+	if (!IsValid(BCGS))
+	{
+		return;
+	}
+
+	ABCPlayerState* CurrentPS = BCGS->CurrentTurnPlayer;
+	if (!IsValid(CurrentPS))
+	{
+		return;
+	}
+
+	ABCPlayerController* CurrentPC = nullptr;
+	for (ABCPlayerController* PC : AllPlayerControllers)
+	{
+		if (IsValid(PC) && PC->GetPlayerState<ABCPlayerState>() == CurrentPS)
+		{
+			CurrentPC = PC;
+			break;
+		}
+	}
+	if (!IsValid(CurrentPC))
+	{
+		return;
+	}
+
+	if (CurrentPS->CurrentGuessCount < CurrentPS->MaxGuessCount)
+	{
+		++CurrentPS->CurrentGuessCount;
+
+		const FString TimeoutMessage = CurrentPS->GetPlayerInfoString() + TEXT(": 제한 시간 초과!");
+
+		for (ABCPlayerController* PC : AllPlayerControllers)
+		{
+			if (IsValid(PC))
+			{
+				PC->ClientRPCPrintChatMessageString(TimeoutMessage);
+			}
+		}
+	}
+
+	JudgeGame(CurrentPC, 0);
+	AdvanceTurn();
 }
 
 void ABCGameModeBase::StartTurn(ABCPlayerController* InPlayerController)
@@ -308,9 +356,7 @@ void ABCGameModeBase::AdvanceTurn()
 	int32 CurrentIndex = AllPlayerControllers.IndexOfByPredicate(
 		[BCGS](const TObjectPtr<ABCPlayerController>& PC)
 		{
-			return IsValid(PC) &&
-				PC->GetPlayerState<ABCPlayerState>() ==
-				BCGS->CurrentTurnPlayer;
+			return IsValid(PC) && PC->GetPlayerState<ABCPlayerState>() == BCGS->CurrentTurnPlayer;
 		}
 	);
 
