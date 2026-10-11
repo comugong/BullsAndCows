@@ -62,3 +62,10 @@ void UBCChatInput::OnChatInputTextCommitted(const FText& Text, ETextCommit::Type
 		}
 	}
 }
+
+void UBCChatInput::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UpdateChatInputState();
+}
