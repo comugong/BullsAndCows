@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
@@ -30,8 +30,19 @@ public:
 
 	void PrintChatMessageString(ABCPlayerController* InChattingPlayerController, const FString& InChatMessageString);
 
+	void OnTurnTimeExpired();
+
 protected:
+	void StartTurn(ABCPlayerController* InPlayerController);
+
+	void AdvanceTurn();
+
+protected:
+	TArray<TObjectPtr<ABCPlayerController>> AllPlayerControllers;
+
 	FString SecretNumberString;
 
-	TArray<TObjectPtr<ABCPlayerController>> AllPlayerControllers;
+	FTimerHandle TurnTimerHandle;
+
+	float TurnDuration = 10.0f;
 };

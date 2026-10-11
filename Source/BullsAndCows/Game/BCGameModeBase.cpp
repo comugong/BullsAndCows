@@ -3,6 +3,7 @@
 #include "Player/BCPlayerController.h"
 #include "Player/BCPlayerState.h"
 #include "EngineUtils.h"
+#include "TimerManager.h"
 
 void ABCGameModeBase::BeginPlay()
 {
@@ -27,10 +28,15 @@ void ABCGameModeBase::OnPostLogin(AController* NewPlayer)
 		{
 			BCPS->PlayerNameString = TEXT("Player") + FString::FromInt(AllPlayerControllers.Num());
 
-			ABCGameStateBase* BCGameStateBase = GetGameState<ABCGameStateBase>();
-			if (IsValid(BCGameStateBase) == true)
+			ABCGameStateBase* BCGS = GetGameState<ABCGameStateBase>();
+			if (IsValid(BCGS) == true)
 			{
-				BCGameStateBase->MulticastRPCBroadcastLoginMessage(BCPS->PlayerNameString);
+				BCGS->MulticastRPCBroadcastLoginMessage(BCPS->PlayerNameString);
+				
+				if (!IsValid(BCGS->CurrentTurnPlayer))
+				{
+					StartTurn(BCPlayerController);
+				}
 			}
 		}
 	}
