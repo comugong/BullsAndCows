@@ -17,4 +17,7 @@ protected:
 protected:
     UPROPERTY(meta = (BindWidget))
     TObjectPtr<UTextBlock> TextBlock_Timer;
+
+    UPROPERTY(meta = (BindWidget))
+    TObjectPtr<UTextBlock> TextBlock_CurrentTurnPlayer;
 };
